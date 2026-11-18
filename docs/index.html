@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Kevin Cookie Company - Blender Cookie Shop</title>
+<style>
+  :root { --bg:#0f172a; --card:#1e293b; --text:#e2e8f0; --text2:#cbd5e1; --muted:#94a3b8; --a1:#fb923c; --a2:#2dd4bf; --line:#334155; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  main { max-width: 960px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); margin: 0 0 8px; color: var(--a1); line-height: 1.2; }
+  p.lede { color: var(--text2); margin: 0 0 24px; max-width: 65ch; }
+  .player { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+  video { display: block; width: 100%; height: auto; border-radius: 8px; background: #000; }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+  a.btn { display: inline-block; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--a2); text-decoration: none; font-weight: 600; }
+  a.btn:hover, a.btn:focus-visible { border-color: var(--a2); outline: none; }
+  h2 { font-size: 1.1rem; color: var(--a2); margin: 32px 0 8px; }
+  ul { margin: 0; padding-left: 1.2em; color: var(--text2); }
+  li { margin: 4px 0; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-top: 24px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Kevin Cookie Company</h1>
+  <p class="lede">A low-poly, pastel cookie shop at night. The camera orbits the shop for 5 seconds while the street comes alive. Blender 5.3 built every object from one Python script.</p>
+
+  <div class="player">
+    <video controls playsinline loop preload="metadata" poster="poster.jpg">
+      <source src="CookieShop.mp4" type="video/mp4">
+      Your browser cannot play this video. Use the download link below.
+    </video>
+  </div>
+
+  <div class="row">
+    <a class="btn" href="CookieShop.mp4" download>Download MP4</a>
+    <a class="btn" href="https://github.com/az9713/Claude-blender-demo">View the source</a>
+  </div>
+
+  <h2>Watch for</h2>
+  <ul>
+    <li>A customer walks up, the door opens, and she goes inside.</li>
+    <li>A kid with a balloon and a dog jog past, and a car drives by.</li>
+    <li>The giant cookie spins above the entrance.</li>
+    <li>A pigeon takes off from the roof, and the cat swishes its tail.</li>
+    <li>String lights chase along the awning, and a shooting star crosses the sky.</li>
+  </ul>
+
+  <p class="meta">1920x1080, 24 fps, H.264, 5 seconds. Rendered with EEVEE.</p>
+</main>
+</body>
+</html>
