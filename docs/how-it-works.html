@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>How Claude and Blender Made the Cookie Shop Video</title>
+<style>
+  :root { --bg:#0f172a; --card:#1e293b; --text:#e2e8f0; --text2:#cbd5e1; --muted:#94a3b8; --a1:#fb923c; --a2:#2dd4bf; --line:#334155; --code:#0b1220; --blue:#7dd3fc; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 24px 16px 80px; }
+  h1 { font-size: clamp(1.7rem, 4.5vw, 2.5rem); line-height: 1.2; margin: 8px 0 12px; color: var(--a1); }
+  h2 { font-size: 1.5rem; margin: 56px 0 12px; color: var(--a2); line-height: 1.25; scroll-margin-top: 64px; }
+  h3 { font-size: 1.1rem; margin: 0 0 6px; color: var(--text); }
+  p { margin: 0 0 12px; color: var(--text2); }
+  a { color: var(--a2); }
+  code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 0.9em; background: var(--code); padding: 1px 6px; border-radius: 4px; color: #fde68a; }
+  pre { background: var(--code); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; overflow-x: auto; margin: 0; font: 13px/1.55 ui-monospace, "Cascadia Code", Consolas, monospace; color: #dbeafe; }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  nav.toc { position: sticky; top: 0; z-index: 10; background: rgba(15,23,42,.94); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); margin: 0 -16px; padding: 8px 16px; display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; }
+  nav.toc a { color: var(--text2); text-decoration: none; font-size: 0.9rem; padding: 4px 10px; border-radius: 6px; border: 1px solid transparent; }
+  nav.toc a:hover, nav.toc a:focus-visible { border-color: var(--a2); outline: none; }
+  .lede { font-size: 1.1rem; color: var(--text2); max-width: 68ch; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .grid > * { min-width: 0; }
+  .term b { color: var(--a1); }
+  .term small { display:block; color: var(--muted); margin-top: 4px; }
+  figure { margin: 12px 0; }
+  figure img { width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--line); display: block; }
+  figcaption { color: var(--muted); font-size: 0.88rem; margin-top: 6px; }
+  .step { border: 1px solid var(--line); border-radius: 14px; background: var(--card); margin: 20px 0; overflow: hidden; }
+  .step > header { display: flex; gap: 12px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+  .num { flex: none; width: 36px; height: 36px; border-radius: 50%; background: var(--a1); color: #1a0f05; font-weight: 800; display: grid; place-items: center; }
+  .step > header h3 { margin: 0; font-size: 1.15rem; }
+  .step > header .when { margin-left: auto; color: var(--muted); font-size: 0.85rem; text-align: right; }
+  .body { padding: 16px; display: grid; gap: 14px; }
+  .io { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; }
+  @media (max-width: 680px) { .io { grid-template-columns: 1fr; } .step > header { flex-wrap: wrap; } .step > header .when { margin-left: 0; text-align: left; width: 100%; } }
+  .io > div { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; min-width: 0; }
+  .io .lab { font: 700 11px/1 system-ui; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; display: block; }
+  .in .lab { color: var(--blue); } .out .lab { color: var(--a2); }
+  .io ul { margin: 0; padding-left: 1.1em; color: var(--text2); font-size: 0.95rem; }
+  .msg { border-left: 4px solid var(--line); border-radius: 0 8px 8px 0; background: var(--bg); padding: 10px 12px; min-width: 0; }
+  .msg .who { font: 700 12px/1.2 system-ui; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 6px; display: block; }
+  .msg.claude { border-left-color: var(--a1); } .msg.claude .who { color: var(--a1); }
+  .msg.blender { border-left-color: var(--a2); } .msg.blender .who { color: var(--a2); }
+  .msg.user { border-left-color: var(--blue); } .msg.user .who { color: var(--blue); }
+  .msg pre { border: 0; padding: 0; background: transparent; }
+  .msg p { margin: 0; font-size: 0.95rem; }
+  .note { border: 1px dashed var(--a1); border-radius: 8px; padding: 10px 12px; color: var(--text2); font-size: 0.95rem; background: rgba(251,146,60,.06); }
+  .note b { color: var(--a1); }
+  details { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; }
+  details summary { cursor: pointer; color: var(--a2); font-weight: 600; }
+  details[open] summary { margin-bottom: 8px; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: .06em; }
+  td:first-child { color: var(--muted); white-space: nowrap; }
+  .tw { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+  .tag { display:inline-block; font-size: 0.72rem; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--text2); white-space: nowrap; }
+  .tag.err { color: #fca5a5; border-color: #7f1d1d; } .tag.ok { color: #86efac; border-color: #14532d; }
+  svg { max-width: 100%; height: auto; display: block; }
+  svg text { font-family: system-ui, sans-serif; }
+  footer { margin-top: 56px; color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--line); padding-top: 16px; }
+</style>
+</head>
+<body>
+<main>
+
+<nav class="toc" aria-label="Page sections">
+  <a href="#big-picture">Big picture</a><a href="#words">Words you need</a><a href="#two-ways">Two ways to talk</a><a href="#steps">The 10 steps</a><a href="#log">Every message</a><a href="#sees">Who sees what</a><a href="#recipe">Try it</a>
+</nav>
+
+<h1>How Claude and Blender Made the Cookie Shop Video</h1>
+<p class="lede">You typed a sentence. A few minutes later you had a 5-second video of a cookie shop at night, with people walking by. This page shows every step in between. For each step you will see what went in, what came out, and the actual messages Claude and Blender sent each other.</p>
+<p>You do not need to know Blender. Each Blender word is explained the first time it appears. The source code and the video are in <a href="https://github.com/az9713/Claude-blender-demo">the repository</a>, and you can <a href="index.html">watch the finished video here</a>.</p>
+
+<figure>
+  <img src="img/step-final-frame.jpg" alt="One frame of the finished video: a pink low-poly cookie shop at night with people walking past" width="960" height="540">
+  <figcaption>The end result: one frame of the finished video (about frame 53 of 120).</figcaption>
+</figure>
+
+<!-- ============ BIG PICTURE ============ -->
+<h2 id="big-picture">The big picture</h2>
+<p>Blender is a free program for making 3D pictures and animations. Normally a person clicks and drags inside Blender. Here, Claude did the work with <b>text</b> instead: it wrote a recipe (a Python script), asked Blender to follow the recipe, then looked at the pictures Blender made, and fixed the recipe until the pictures looked right.</p>
+
+<div class="card" style="padding:12px">
+<svg viewBox="0 0 900 330" role="img" aria-label="Diagram: you give a prompt to Claude. Claude writes a script file, runs Blender from the command line, Blender writes image and video files, Claude looks at the files and repeats.">
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/></marker></defs>
+  <g font-size="14">
+    <rect x="10" y="120" width="120" height="70" rx="10" fill="#1e293b" stroke="#7dd3fc"/>
+    <text x="70" y="150" text-anchor="middle" fill="#7dd3fc" font-weight="700">You</text>
+    <text x="70" y="170" text-anchor="middle" fill="#cbd5e1" font-size="12">write a prompt</text>
+
+    <rect x="190" y="100" width="150" height="110" rx="10" fill="#1e293b" stroke="#fb923c"/>
+    <text x="265" y="128" text-anchor="middle" fill="#fb923c" font-weight="700">Claude</text>
+    <text x="265" y="150" text-anchor="middle" fill="#cbd5e1" font-size="12">plans the scene</text>
+    <text x="265" y="168" text-anchor="middle" fill="#cbd5e1" font-size="12">writes the recipe</text>
+    <text x="265" y="186" text-anchor="middle" fill="#cbd5e1" font-size="12">checks the pictures</text>
+
+    <rect x="400" y="20" width="150" height="62" rx="10" fill="#0b1220" stroke="#334155"/>
+    <text x="475" y="46" text-anchor="middle" fill="#e2e8f0" font-weight="700" font-size="13">Recipe file</text>
+    <text x="475" y="65" text-anchor="middle" fill="#94a3b8" font-size="12">build_cookie_shop.py</text>
+
+    <rect x="400" y="120" width="150" height="70" rx="10" fill="#1e293b" stroke="#2dd4bf"/>
+    <text x="475" y="150" text-anchor="middle" fill="#2dd4bf" font-weight="700">Blender</text>
+    <text x="475" y="170" text-anchor="middle" fill="#cbd5e1" font-size="12">no window, text only</text>
+
+    <rect x="400" y="230" width="150" height="62" rx="10" fill="#0b1220" stroke="#334155"/>
+    <text x="475" y="256" text-anchor="middle" fill="#e2e8f0" font-weight="700" font-size="13">Result files</text>
+    <text x="475" y="275" text-anchor="middle" fill="#94a3b8" font-size="12">.png  .blend  .mp4</text>
+
+    <rect x="650" y="120" width="140" height="70" rx="10" fill="#1e293b" stroke="#334155"/>
+    <text x="720" y="150" text-anchor="middle" fill="#e2e8f0" font-weight="700">Text output</text>
+    <text x="720" y="170" text-anchor="middle" fill="#94a3b8" font-size="12">logs, errors, timings</text>
+  </g>
+  <g stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#ar)">
+    <path d="M130 155 H186"/>
+    <path d="M300 100 L400 60"/>
+    <path d="M340 155 H396"/>
+    <path d="M475 190 V226"/>
+    <path d="M550 155 H646"/>
+  </g>
+  <g stroke="#94a3b8" stroke-width="2" fill="none" stroke-dasharray="5 4" marker-end="url(#ar)">
+    <path d="M400 275 C 300 300, 260 260, 262 214"/>
+    <path d="M720 190 C 720 300, 380 330, 280 214"/>
+  </g>
+  <g font-size="12" fill="#cbd5e1">
+    <text x="318" y="72" transform="rotate(-20 318 72)">1 writes</text>
+    <text x="352" y="146">2 runs</text>
+    <text x="482" y="213">3 saves</text>
+    <text x="578" y="146">4 prints</text>
+    <text x="268" y="296">5 Claude opens the images</text>
+    <text x="520" y="318">6 and reads the text, then fixes the recipe and goes back to step 1</text>
+  </g>
+</svg>
+</div>
+<p style="margin-top:12px">This write, run, look, fix loop ran many times. Each pass took from about 20 seconds (one picture) to about 5 minutes (the whole video).</p>
+
+<!-- ============ WORDS ============ -->
+<h2 id="words">Words you need</h2>
+<div class="grid">
+  <div class="card term"><b>Scene</b> A film set. It holds every object, light, and camera.<small>Our scene has about 1,274 objects.</small></div>
+  <div class="card term"><b>Object</b> One thing in the scene: a wall, a chair, a lamp.<small>A cookie shop is hundreds of small objects.</small></div>
+  <div class="card term"><b>Mesh</b> A surface made of flat faces joined at corners.<small>"Low-poly" means few faces, so it looks chunky and cute.</small></div>
+  <div class="card term"><b>Material</b> The paint of an object: color, shine, glow.<small>A glowing window has an "emission" material.</small></div>
+  <div class="card term"><b>Light</b> Something that lights the scene.<small>Types used: sun (moonlight), point (lamps), spot (a cone), area (a soft panel).</small></div>
+  <div class="card term"><b>Camera</b> Where the picture is taken from.<small>Blender only draws what the camera sees.</small></div>
+  <div class="card term"><b>Render</b> The computer "takes the photo" of the scene.<small>The slow part. The last test frame took about 4 seconds to draw. All 120 frames took 5 minutes 11 seconds.</small></div>
+  <div class="card term"><b>Frame</b> One still picture. A video is many frames.<small>24 frames per second (fps) x 5 seconds = 120 frames.</small></div>
+  <div class="card term"><b>Keyframe</b> A saved pose at a chosen frame. Blender fills in the frames between.<small>Camera at the left on frame 1, at the right on frame 120.</small></div>
+  <div class="card term"><b>Python script</b> A text file of instructions Blender can follow.<small>This is the "recipe". It replaces mouse clicks.</small></div>
+  <div class="card term"><b>Headless</b> Blender running with no window, started from the command line.<small>It reads a script, does the work, writes files, and exits.</small></div>
+  <div class="card term"><b>EEVEE</b> Blender's fast renderer.<small>Good for a stylized look. The slower option is Cycles.</small></div>
+  <div class="card term"><b>MP4 / H.264</b> The common video file type and its compression.<small>Plays on phones and browsers.</small></div>
+  <div class="card term"><b>Tool</b> A button Claude can press: write a file, run a command, open an image.<small>Every Claude and Blender message goes through a tool.</small></div>
+  <div class="card term"><b>MCP</b> A plug that lets Claude control another program live.<small>There is one for Blender. The next section says what happened with it.</small></div>
+</div>
+
+<!-- ============ TWO WAYS ============ -->
+<h2 id="two-ways">Two ways Claude can talk to Blender</h2>
+<div class="grid">
+  <div class="card">
+    <h3>Way A: the live link (MCP)</h3>
+    <p>Blender is open on your screen. An add-on inside Blender listens at <code>localhost:9876</code>. Claude sends Python code and gets a reply, like a chat. Claude can ask for a list of objects, run code, or take a screenshot.</p>
+    <p>The tools Claude saw for this: <code>execute_blender_code</code>, <code>get_objects_summary</code>, <code>render_viewport_to_path</code>, <code>get_screenshot_of_window_as_image</code>, <code>get_blendfile_summary_path_info</code>.</p>
+  </div>
+  <div class="card">
+    <h3>Way B: the command line (what really happened)</h3>
+    <p>Claude writes a script file, then starts Blender with a command that says "run this script and quit". Blender answers with files and text. Claude reads both.</p>
+    <p>This is slower per try than the live link, but it needs no open window and no add-on.</p>
+  </div>
+</div>
+<div class="note" style="margin-top:12px"><b>What happened here:</b> Claude tried Way A first. Blender was not listening, so the answer was "Cannot connect". Claude then used Way B for the whole project. Step 1 shows the exact messages.</div>
+
+<!-- ============ STEPS ============ -->
+<h2 id="steps">The 10 steps</h2>
+<p>In each step, <b style="color:var(--a1)">orange</b> boxes are what Claude sends, <b style="color:var(--a2)">teal</b> boxes are what comes back from Blender (or the tool), and <b style="color:var(--blue)">blue</b> boxes are from you. Long outputs are shortened and marked "(shortened)". Your computer's folder names are replaced with <code>&lt;project&gt;</code>.</p>
+
+<!-- STEP 1 -->
+<section class="step" id="s1">
+  <header><div class="num">1</div><h3>Say what you want, then try the live link</h3><div class="when">Your first prompt</div></header>
+  <div class="body">
+    <p>Why: Claude needs your goal in words. It then checks whether Blender is open and listening.</p>
+    <div class="msg user"><span class="who">You</span><pre><code>Create a colorful, stylized 3D cookie shop in Blender. Give it a pastel-colored exterior, large display
+windows, a striped awning, a sign that says "Cookie Shop," and a giant chocolate chip cookie above the
+entrance. Add a sidewalk and warm, inviting lighting. Use a charming, low-poly style and position the
+camera to show the entire storefront.</code></pre></div>
+    <div class="msg claude"><span class="who">Claude asks the tool catalog for the Blender tools</span><pre><code>ToolSearch  query: "select:mcp__Blender__execute_blender_code,
+                          mcp__Blender__get_objects_summary,
+                          mcp__Blender__render_viewport_to_path,
+                          mcp__Blender__get_screenshot_of_window_as_image,
+                          mcp__Blender__get_blendfile_summary_path_info"</code></pre></div>
+    <div class="msg blender"><span class="who">Tool catalog replies (shortened)</span><pre><code>execute_blender_code: "Execute Python code in the connected Blender instance. ...
+                       To return data, assign a JSON-serialisable dict to a variable named `result`."
+get_objects_summary:  "Return the scene's collection hierarchy and their objects."
+render_viewport_to_path: "Render the current scene to *output_path* using current render settings."</code></pre></div>
+    <div class="msg claude"><span class="who">Claude knocks on Blender's door (two calls)</span><pre><code>get_objects_summary()
+get_blendfile_summary_path_info()</code></pre></div>
+    <div class="msg blender"><span class="who">Reply from the Blender tool: nobody home</span><pre><code>Error executing tool get_objects_summary: Cannot connect to Blender at localhost:9876.
+Ensure Blender is running with the MCP addon enabled and the server started.</code></pre></div>
+    <div class="io">
+      <div class="in"><span class="lab">Input</span><ul><li>Your prompt (text)</li><li>The list of tools Claude may use</li></ul></div>
+      <div class="out"><span class="lab">Output</span><ul><li>A decision: the live link is off, so use the command line</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 2 -->
+<section class="step" id="s2">
+  <header><div class="num">2</div><h3>Find Blender and read the house rules</h3><div class="when">Same turn</div></header>
+  <div class="body">
+    <p>Why: Command-line mode needs the exact location of <code>blender.exe</code>. Claude also has a saved note (a "skill") with lessons from earlier Blender work.</p>
+    <div class="msg claude"><span class="who">Claude runs a PowerShell search, and loads the note</span><pre><code>PowerShell: look for "blender" on PATH, in "C:\Program Files\Blender Foundation", and in Steam
+Skill: blender-headless</code></pre></div>
+    <div class="msg blender"><span class="who">Replies</span><pre><code>C:\Program Files\Blender Foundation\Blender 5.3
+
+blender-headless note, key lines (paraphrased):
+  - Start scripts with  bpy.ops.wm.read_factory_settings(use_empty=True)
+  - Command:  blender.exe -b -P script.py
+  - Set  scene.view_settings.view_transform = 'Standard'  (the default washes out flat colors)
+  - Engine name is 'BLENDER_EEVEE' on 5.2, not 'BLENDER_EEVEE_NEXT'
+  - Use flat shading for the low-poly look</code></pre></div>
+    <div class="io">
+      <div class="in"><span class="lab">Input</span><ul><li>A search of the disk</li><li>A saved note from past work</li></ul></div>
+      <div class="out"><span class="lab">Output</span><ul><li>Blender 5.3 location</li><li>A checklist of known traps</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 3 -->
+<section class="step" id="s3">
+  <header><div class="num">3</div><h3>Write the recipe</h3><div class="when">First script</div></header>
+  <div class="body">
+    <p>Why: A script is the only way to give Blender hundreds of precise instructions without a mouse. Claude turned "pastel shop, awning, sign, cookie, sidewalk" into code. It used small helper functions so the code stays short.</p>
+    <div class="msg claude"><span class="who">Claude uses the Write tool to save a file (shortened)</span><pre><code>&lt;project&gt;\build_cookie_shop.py
+
+def box(name, x0, x1, y0, y1, z0, z1, m, rot=None, shadow=True):
+    """Make a rectangular block between two corners and give it paint m."""
+    ...
+def disc(name, c, r, h, m, seg=10, axis='Z', ...):
+    """Make a short round cylinder (cookies, tables, jars). seg = number of sides."""
+    ...
+# palette: pastel pink walls, mint base, lavender cornice, turquoise awning stripes
+box("wall_left", -5, -4.6, 0.4, 6, 0.15, H, PINK)
+box("awning_stripe", xa, xb, -L/2, L/2, -0.03, 0.03, STRIPE_A, rot=rot)
+...
+cam.location = (3.2, -23.0, 4.3)      # camera far back so the whole shop fits
+bpy.ops.render.render(write_still=True)</code></pre></div>
+    <div class="note"><b>How to read it:</b> Blender uses metres. X goes right, Y goes away from the street, Z goes up. A line like <code>box("wall_left", -5, -4.6, ...)</code> means "a wall between x = -5 and x = -4.6 metres". The whole shop is built from numbers like these.</div>
+    <div class="io">
+      <div class="in"><span class="lab">Input</span><ul><li>Your prompt</li><li>The saved checklist</li><li>Claude's plan for sizes and colors</li></ul></div>
+      <div class="out"><span class="lab">Output</span><ul><li>One text file, about 20 KB</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 4 -->
+<section class="step" id="s4">
+  <header><div class="num">4</div><h3>Run Blender on the recipe</h3><div class="when">About 1 minute</div></header>
+  <div class="body">
+    <p>Why: Nothing exists until Blender follows the recipe. This is the "message" Claude sends to Blender in Way B: one command line.</p>
+    <div class="msg claude"><span class="who">Claude runs this command with the Bash tool</span><pre><code>"C:\Program Files\Blender Foundation\Blender 5.3\blender.exe" -b -P build_cookie_shop.py
+       -b = background (no window)      -P = run this Python script</code></pre></div>
+    <div class="msg blender"><span class="who">Blender prints (shortened)</span><pre><code>00:55.688  render  | Saved: '&lt;project&gt;\cookie_shop.png'
+Info: Saved as "cookie_shop.blend"
+OK  &lt;project&gt;\cookie_shop.blend  &lt;project&gt;\cookie_shop.png  objects: 574  engine: BLENDER_EEVEE
+Blender quit
+real    1m0.452s</code></pre></div>
+    <div class="note"><b>Why "OK ..." matters:</b> Claude's script prints its own <code>OK</code> line at the very end. If that line is missing, the run failed even when the exit code looks fine. Claude searches the output for it.</div>
+    <div class="io">
+      <div class="in"><span class="lab">Input</span><ul><li><code>build_cookie_shop.py</code></li></ul></div>
+      <div class="out"><span class="lab">Output</span><ul><li><code>cookie_shop.blend</code> (the scene)</li><li><code>cookie_shop.png</code> (one picture)</li><li>Text log with timings</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 5 -->
+<section class="step" id="s5">
+  <header><div class="num">5</div><h3>Claude looks at the picture, then fixes</h3><div class="when">Looks, edits, runs again</div></header>
+  <div class="body">
+    <p>Why: Claude cannot see Blender's screen, but it can open an image file. The Read tool sends the picture to Claude as an image. Claude judged the first picture as too washed out and brightened less.</p>
+    <div class="msg claude"><span class="who">Claude opens the render</span><pre><code>Read  &lt;project&gt;\cookie_shop.png</code></pre></div>
+    <div class="msg blender"><span class="who">The tool returns the picture itself</span>
+      <figure style="margin:8px 0 0"><img src="img/step-day-v1.jpg" alt="Daytime low-poly cookie shop with pink walls, striped awning and the sign Cookie Shop" width="960" height="720"><figcaption>What Claude saw after the fix: the day version with the "Cookie Shop" sign.</figcaption></figure></div>
+    <div class="msg claude"><span class="who">Claude changes numbers in the recipe, then runs Blender again</span><pre><code>sun strength      2.6  -&gt;  1.7
+sky light         300  -&gt;  120
+world brightness  1.0  -&gt;  0.7
+(also: glass inside the upper windows was hidden in the wall, so it was moved forward)
+
+blender.exe -b -P build_cookie_shop.py
+OK ...  objects: 573  engine: BLENDER_EEVEE</code></pre></div>
+    <div class="io">
+      <div class="in"><span class="lab">Input</span><ul><li>The first render as an image</li></ul></div>
+      <div class="out"><span class="lab">Output</span><ul><li>A better recipe and a second render</li><li>The day-version picture, sent to you</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 6 -->
+<section class="step" id="s6">
+  <header><div class="num">6</div><h3>New prompts: tables, night, "Kevin Cookie Company"</h3><div class="when">From your README.txt</div></header>
+  <div class="body">
+    <p>Why: You pointed Claude at a README.txt that listed more prompts. Claude read it and applied them in order. The first attempt to find the file found nothing, because the file name is in capitals.</p>
+    <div class="msg claude"><span class="who">Claude looks for the file</span><pre><code>Glob  pattern: **/[Rr]eadme*.txt          -&gt; No files found
+Bash  ls -la ; find ... -iname "readme*.txt"   -&gt; README.txt (case-insensitive search worked)
+Read  README.txt</code></pre></div>
+    <div class="msg user"><span class="who">The prompts inside README.txt (shortened)</span><pre><code>"Add two small outdoor tables with chairs in front of the cookie shop, along with colorful flower pots ..."
+"Change the scene to nighttime. Add warm lights inside ... make the windows glow ... Change the sign name to
+ "Kevin Cookie Company." Also add more texture and detail ..."
+"Create a 5-second animation at 24 frames per second. Have the camera slowly orbit ... rotate the giant cookie ..."
+"Render the current animation as a 1920 x 1080 MP4 video at 24 frames per second. Use H.264 ..."</code></pre></div>
+    <p>Claude kept the old script as a backup, then edited the recipe: new tables and chairs, dark blue sky with stars, warm lamps, glowing glass, texture on walls, awning, sidewalk and cookie. It rendered one test picture (frame 60) to check.</p>
+    <div class="msg blender"><span class="who">Blender prints a warning (shortened)</span><pre><code>Error: Shadow buffer full, may result in missing shadows and lower performance. (2730 / 2048)
+   ... repeated many times ...
+OK ...  mode: still  objects: 1097  engine: BLENDER_EEVEE
+real    0m21.240s</code></pre></div>
+    <div class="msg claude"><span class="who">Claude asks Blender what the legal values for that setting are</span><pre><code>blender.exe -b --python-expr "import bpy; p=bpy.types.SceneEEVEE.bl_rna.properties;
+    print('POOL', [i.identifier for i in p['shadow_pool_size'].enum_items])"</code></pre></div>
+    <div class="msg blender"><span class="who">Reply</span><pre><code>POOL ['16', '32', '64', '128', '256', '512', '1024', '1536', '2048']</code></pre></div>
+    <p>Claude set the shadow memory to <code>'1024'</code> (the warnings stopped), pulled the camera back to fit a 16:9 frame, and lowered the window glow a little. It rendered frames 1 and 120 to check both ends.</p>
+    <figure><img src="img/step-night-v2.jpg" alt="Night version of the shop: dark blue sky, glowing windows, the sign Kevin Cookie Company, outdoor tables" width="960" height="540"><figcaption>The night version, frame 1: glowing windows, tables and chairs, "Kevin Cookie Company".</figcaption></figure>
+    <div class="io">
+      <div class="in"><span class="lab">Input</span><ul><li>Prompts from README.txt</li><li>The previous recipe</li><li>A warning from Blender</li></ul></div>
+      <div class="out"><span class="lab">Output</span><ul><li>Night recipe (1,097 objects)</li><li>Test pictures of frames 1, 60, 120</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 7 -->
+<section class="step" id="s7">
+  <header><div class="num">7</div><h3>Add motion: keyframes</h3><div class="when">Frames 1 to 120</div></header>
+  <div class="body">
+    <p>Why: A video needs things to change over time. In Blender you set a value at one frame, set a different value at a later frame, and Blender fills in the frames between. Claude did this in the recipe with <code>keyframe_insert</code>.</p>
+    <div class="msg claude"><span class="who">The camera orbit and the cookie spin, from the recipe</span><pre><code>FPS, SECONDS = 24, 5
+scene.frame_start, scene.frame_end = 1, FPS * SECONDS        # frames 1..120
+
+cam.parent = cam_rig                                         # camera rides on an invisible "arm"
+cam_rig.rotation_euler = (0, 0, math.radians(-30 - base_az))
+cam_rig.keyframe_insert('rotation_euler', index=2, frame=1)           # arm points left on frame 1
+cam_rig.rotation_euler = (0, 0, math.radians(30 - base_az))
+cam_rig.keyframe_insert('rotation_euler', index=2, frame=FPS * SECONDS)   # arm points right on frame 120
+
+cookie_rig.rotation_euler = (0, math.radians(180), 0)                  # cookie turns half a circle
+cookie_rig.keyframe_insert('rotation_euler', index=1, frame=FPS * SECONDS)</code></pre></div>
+    <div class="note"><b>The "arm" trick:</b> The shop sits at the center point. An invisible object (an "empty") at that point turns. The camera is its child, so the camera swings around the shop and always faces it. Claude never moves the camera frame by frame. It sets two poses.</div>
+    <div class="io">
+      <div class="in"><span class="lab">Input</span><ul><li>"5 seconds, 24 fps, slow orbit, spinning cookie"</li></ul></div>
+      <div class="out"><span class="lab">Output</span><ul><li>Timeline set to frames 1-120</li><li>Animation stored inside the scene</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 8 -->
+<section class="step" id="s8">
+  <header><div class="num">8</div><h3>Render the video (and fix an error)</h3><div class="when">First try failed</div></header>
+  <div class="body">
+    <p>Why: The last prompt asks for an MP4 file. Blender draws all 120 frames and joins them into one video. Blender 5 changed how the video setting works, and the first try failed.</p>
+    <div class="msg claude"><span class="who">Claude's video settings (from the recipe)</span><pre><code>r.image_settings.file_format = 'FFMPEG'      # "make a video"
+r.ffmpeg.format = 'MPEG4'
+r.ffmpeg.codec  = 'H264'
+r.ffmpeg.constant_rate_factor = 'MEDIUM'      # quality / size balance
+bpy.ops.render.render(animation=True)         # draw every frame</code></pre></div>
+    <div class="msg blender"><span class="who">Blender's error (shortened)</span><pre><code>TypeError: bpy_struct: item.attr = val: enum "FFMPEG" not found in
+('AVIF', 'JPEG', 'OPEN_EXR', 'PNG', 'WEBP', 'BMP', 'CINEON', 'DPX', 'IRIS', 'JPEG2000', 'HDR', 'TARGA', 'TARGA_RAW', 'TIFF')</code></pre></div>
+    <div class="msg claude"><span class="who">Claude asks Blender what is allowed</span><pre><code>blender.exe -b --python-expr "... print('MT', [i.identifier for i in r.image_settings.bl_rna.properties['media_type'].enum_items]) ..."</code></pre></div>
+    <div class="msg blender"><span class="who">Reply</span><pre><code>MT ['IMAGE', 'MULTI_LAYER_IMAGE', 'VIDEO']      # set VIDEO first, then FFMPEG becomes available</code></pre></div>
+    <div class="msg claude"><span class="who">The one-line fix, then the real render in the background</span><pre><code>r.image_settings.media_type = 'VIDEO'
+r.image_settings.file_format = 'FFMPEG'</code></pre></div>
+    <div class="io">
+      <div class="in"><span class="lab">Input</span><ul><li>The animated scene</li><li>1920 x 1080, 24 fps, H.264</li></ul></div>
+      <div class="out"><span class="lab">Output</span><ul><li><code>CookieShop.mp4</code></li><li>No frames kept, just the video</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 9 -->
+<section class="step" id="s9">
+  <header><div class="num">9</div><h3>Check the video with a second tool</h3><div class="when">After every render</div></header>
+  <div class="body">
+    <p>Why: "Blender finished" does not prove the file is right. Claude asks <code>ffprobe</code> (a video inspector) for the facts and compares them with your prompt.</p>
+    <div class="msg claude"><span class="who">Claude runs</span><pre><code>ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames,duration -of default=nw=1 CookieShop.mp4</code></pre></div>
+    <div class="msg blender"><span class="who">ffprobe replies</span><pre><code>codec_name=h264
+width=1920
+height=1080
+r_frame_rate=24/1
+duration=5.000000
+nb_frames=120</code></pre></div>
+    <div class="msg claude"><span class="who">Claude then sends the file to you</span><pre><code>SendUserFile  CookieShop.mp4  (2.6 MB, first version)</code></pre></div>
+    <div class="io">
+      <div class="in"><span class="lab">Input</span><ul><li><code>CookieShop.mp4</code></li><li>Your spec from the prompt</li></ul></div>
+      <div class="out"><span class="lab">Output</span><ul><li>Pass or fail for each number</li><li>The video in your chat</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 10 -->
+<section class="step" id="s10">
+  <header><div class="num">10</div><h3>"Make it fun and feel alive"</h3><div class="when">Second pass, about 5 minutes to render</div></header>
+  <div class="body">
+    <p>Why: The first video only moved the camera and the cookie. You asked for more life. Claude added people, a dog, a car, a customer who walks into the shop, a cat, a pigeon that flies away, twinkling stars, swaying bunting, and more. All of it is keyframes, like step 7, repeated hundreds of times in a loop.</p>
+    <div class="msg claude"><span class="who">Claude adds a walker (shortened)</span><pre><code>kid = person("kidA", shirt='#FF7FA8', pants='#3D5A6C')      # a few boxes: torso, head, 2 legs, 2 arms
+path(kid['root'], [(1, -10.5, -4.15), (121, 9.5, -4.15)])  # x goes from -10.5 m to 9.5 m over 120 frames
+walk(kid, 1, 121, period=10, amp=0.8)                       # swing legs and arms every 10 frames</code></pre></div>
+    <p>Then Claude tested three still frames (1, 50, 90) before spending 5 minutes on the full render.</p>
+    <figure><img src="img/step-alive-test.jpg" alt="Test frame 50: customer at the open door, kid with balloon and dog on the sidewalk, cat on the sign" width="960" height="540"><figcaption>Test frame 50. The customer stands at the open door. The cat sits on the sign.</figcaption></figure>
+    <div class="msg claude"><span class="who">Claude found problems in the test frames and fixed them</span><pre><code>- A walker passed through a tree planter and a hydrant  -&gt; paths moved to separate lanes, hydrant and bin moved
+- The car looked too big at the bottom of the frame      -&gt; car moved further down the street (y = -8.5 to -12)</code></pre></div>
+    <div class="msg blender"><span class="who">Final run</span><pre><code>OK  &lt;project&gt;\cookie_shop_night.blend  mode: anim  objects: 1274  engine: BLENDER_EEVEE
+real    5m11.380s
+(ffprobe)  h264  1920x1080  24/1  duration=5.000000  nb_frames=120</code></pre></div>
+    <div class="io">
+      <div class="in"><span class="lab">Input</span><ul><li>"Add more detail. Make it fun and feel alive."</li><li>Test frames</li></ul></div>
+      <div class="out"><span class="lab">Output</span><ul><li>Final <code>CookieShop.mp4</code> (3.2 MB)</li><li>Scene grew from 574 to 1,274 objects</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LOG ============ -->
+<h2 id="log">Every message, in order</h2>
+<p>This table lists each exchange between Claude and Blender (or the tools around it). A <span class="tag err">fail</span> tag shows an exchange that did not work, and how Claude used the failure.</p>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>Claude sends</th><th>Channel</th><th>What came back</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Ask for the Blender tool definitions</td><td>ToolSearch</td><td>5 tool descriptions (run code, list objects, render, screenshot, file info)</td></tr>
+<tr><td>2</td><td><code>get_objects_summary</code></td><td>Blender live link</td><td><span class="tag err">fail</span> "Cannot connect to Blender at localhost:9876"</td></tr>
+<tr><td>3</td><td><code>get_blendfile_summary_path_info</code></td><td>Blender live link</td><td><span class="tag err">fail</span> same error. Claude switches to the command line.</td></tr>
+<tr><td>4</td><td>Search the disk for Blender</td><td>PowerShell</td><td>Blender 5.3 folder path</td></tr>
+<tr><td>5</td><td>Load the <code>blender-headless</code> note</td><td>Skill</td><td>Checklist: <code>-b -P</code>, Standard color, flat shading</td></tr>
+<tr><td>6</td><td>Save <code>build_cookie_shop.py</code></td><td>Write</td><td>File created (about 20 KB)</td></tr>
+<tr><td>7</td><td>Two small edits (clean-ups)</td><td>Edit</td><td>Edits applied</td></tr>
+<tr><td>8</td><td><code>blender.exe -b -P build_cookie_shop.py</code></td><td>Bash</td><td><span class="tag ok">ok</span> 574 objects, 1 min, PNG and .blend saved</td></tr>
+<tr><td>9</td><td>Open <code>cookie_shop.png</code></td><td>Read</td><td>The picture. Claude sees it as too washed out.</td></tr>
+<tr><td>10</td><td>Change lighting numbers, run again</td><td>Bash</td><td><span class="tag ok">ok</span> 573 objects. Picture sent to you.</td></tr>
+<tr><td>11</td><td>Find <code>Readme*.txt</code></td><td>Glob</td><td><span class="tag err">fail</span> no match (capital letters). A case-insensitive search found <code>README.txt</code>.</td></tr>
+<tr><td>12</td><td>Read <code>README.txt</code></td><td>Read</td><td>4 more prompts: tables, night, animation, MP4</td></tr>
+<tr><td>13</td><td>Write a patch file, back up the script, apply the night edits, render frame 60</td><td>Write, Bash</td><td><span class="tag ok">ok</span> 1,097 objects, 21 s. Warning: "Shadow buffer full (2730 / 2048)"</td></tr>
+<tr><td>14</td><td>Open the frame-60 render</td><td>Read</td><td>Image. Camera too tight at 16:9.</td></tr>
+<tr><td>15</td><td>Ask Blender for legal shadow-memory values</td><td>Bash (<code>--python-expr</code>)</td><td><code>['16', ... '1024', '1536', '2048']</code></td></tr>
+<tr><td>16</td><td>Set 1024, pull camera back, render frames 1 and 120</td><td>Bash</td><td><span class="tag ok">ok</span> zero warnings. Both images looked right.</td></tr>
+<tr><td>17</td><td>Render the full animation to MP4</td><td>Bash</td><td><span class="tag err">fail</span> <code>TypeError: enum "FFMPEG" not found</code></td></tr>
+<tr><td>18</td><td>Ask Blender for the legal media types</td><td>Bash (<code>--python-expr</code>)</td><td><code>['IMAGE', 'MULTI_LAYER_IMAGE', 'VIDEO']</code></td></tr>
+<tr><td>19</td><td>Add <code>media_type = 'VIDEO'</code>, render again</td><td>Bash (background)</td><td><span class="tag ok">ok</span> MP4 created</td></tr>
+<tr><td>20</td><td><code>ffprobe</code> on the MP4</td><td>Bash</td><td>h264, 1920x1080, 24 fps, 120 frames, 5.000 s</td></tr>
+<tr><td>21</td><td>Send the MP4 to you</td><td>SendUserFile</td><td>File card in your chat</td></tr>
+<tr><td>22</td><td>Write the "alive" edits, render test frames 1, 50, 90</td><td>Write, Bash</td><td><span class="tag ok">ok</span> 1,274 objects. Images showed the street life working.</td></tr>
+<tr><td>23</td><td>Open frames 50 and 90</td><td>Read</td><td>Images. Found a walker inside a planter and an oversize car.</td></tr>
+<tr><td>24</td><td>Move lanes, move car, render the full animation</td><td>Bash (background)</td><td><span class="tag ok">ok</span> 5 min 11 s. Exit code 0.</td></tr>
+<tr><td>25</td><td><code>ffprobe</code> and grab a frame at 2.2 s</td><td>Bash</td><td>5.000 s, 120 frames. Frame image looked right.</td></tr>
+<tr><td>26</td><td>Send the final MP4 to you</td><td>SendUserFile</td><td>File card in your chat</td></tr>
+</tbody></table></div>
+<p class="hint" style="margin-top:10px">Not shown: an unrelated add-on message printed at the end of some Blender runs (it did not affect the render), and work that did not involve Blender (the tutorial page and the GitHub upload).</p>
+
+<!-- ============ SEES ============ -->
+<h2 id="sees">Who sees what</h2>
+<div class="grid">
+  <div class="card"><h3>Claude can see</h3><p>Text that Blender prints. Error messages. Image files it opens (it sees the picture, not numbers). Video facts from ffprobe. The recipe file it wrote.</p></div>
+  <div class="card"><h3>Claude cannot see</h3><p>Your screen. A live Blender window (it was never connected). The finished video playing. Claude judged motion from still test frames and file facts. It did not watch the whole video.</p></div>
+  <div class="card"><h3>Blender can see</h3><p>Only the recipe file and its own settings. It has no idea what you asked for. It follows instructions and reports errors.</p></div>
+</div>
+
+<!-- ============ RECIPE ============ -->
+<h2 id="recipe">Try it yourself</h2>
+<p>You need Blender 5.3 and the repository files. Open a terminal in the folder that holds <code>build_cookie_shop.py</code>.</p>
+<div class="grid">
+  <div><h3>One picture (about 20 seconds)</h3><pre><code>blender -b -P build_cookie_shop.py -- still 60</code></pre></div>
+  <div><h3>The video (about 5 minutes)</h3><pre><code>blender -b -P build_cookie_shop.py -- anim</code></pre></div>
+</div>
+<p style="margin-top:12px">Want to explore the scene by hand? Open <code>cookie_shop_night.blend</code> in Blender and press <b>Space</b> to play the animation. Click objects in the list at the top right to see their names, like <code>giant_cookie</code> or <code>sign_text</code>.</p>
+
+<footer>
+  Page built from the real session. Tool outputs are copied from it and shortened where marked. Folder names are replaced.
+  <a href="https://github.com/az9713/Claude-blender-demo">Back to the repository</a> · <a href="index.html">Watch the video</a>
+</footer>
+</main>
+</body>
+</html>

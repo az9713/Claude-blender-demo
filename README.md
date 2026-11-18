@@ -6,6 +6,10 @@ A low-poly, pastel cookie shop at night, built entirely by a Python script in Bl
 
 The animation above plays right here. **Click it to open the full video player** (MP4 with play, pause, and fullscreen controls): https://az9713.github.io/Claude-blender-demo/
 
+## How Claude and Blender made this
+
+New to Blender? Read the step-by-step explainer. It shows every step with its inputs and outputs, and the real messages Claude and Blender exchanged, including the errors: https://az9713.github.io/Claude-blender-demo/how-it-works.html
+
 ## What is in the scene
 
 - Pastel storefront with two display windows, a striped awning, and the sign "Kevin Cookie Company".
