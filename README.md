@@ -2,16 +2,9 @@
 
 A low-poly, pastel cookie shop at night, built entirely by a Python script in Blender 5.3. The scene has a sign, a striped awning, a giant chocolate chip cookie, an outdoor café, and a lively street. The camera orbits the shop for 5 seconds.
 
-<video src="https://github.com/az9713/Claude-blender-demo/raw/main/docs/CookieShop.mp4" poster="docs/poster.jpg" controls muted loop playsinline width="720"></video>
+[![Kevin Cookie Company: 5-second animation preview. Click to open the full video player.](docs/preview.gif)](https://az9713.github.io/Claude-blender-demo/)
 
-**Watch on the web (plays everywhere, with controls):** https://az9713.github.io/Claude-blender-demo/
-
-<details>
-<summary>The player above does not load? Open the preview GIF.</summary>
-
-<img src="docs/preview.gif" alt="Preview of the cookie shop animation" width="560">
-
-</details>
+The animation above plays right here. **Click it to open the full video player** (MP4 with play, pause, and fullscreen controls): https://az9713.github.io/Claude-blender-demo/
 
 ## What is in the scene
 
