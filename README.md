@@ -12,7 +12,7 @@ A 40-second tour of ten shops on one street, with the cookie shop in the middle.
 
 ## The morning walk
 
-A relaxing 60-second Saturday-morning stroll past the same ten shops. The camera never zooms and nobody goes inside. Watch it, and jump to any shop: https://az9713.github.io/Claude-blender-demo/walk.html
+A relaxing 60-second Saturday-morning stroll past the same ten shops, with lofi music that changes for each shop. The camera never zooms and nobody goes inside. Watch it, and jump to any shop: https://az9713.github.io/Claude-blender-demo/walk.html
 
 ## How Claude and Blender made this
 
