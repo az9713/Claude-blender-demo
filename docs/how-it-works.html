@@ -88,7 +88,7 @@
 <p>Blender is a free program for making 3D pictures and animations. Normally a person clicks and drags inside Blender. Here, Claude did the work with <b>text</b> instead: it wrote a recipe (a Python script), asked Blender to follow the recipe, then looked at the pictures Blender made, and fixed the recipe until the pictures looked right.</p>
 
 <div class="card" style="padding:12px">
-<svg viewBox="0 0 900 330" role="img" aria-label="Diagram: you give a prompt to Claude. Claude writes a script file, runs Blender from the command line, Blender writes image and video files, Claude looks at the files and repeats.">
+<svg viewBox="0 0 900 372" role="img" aria-label="Diagram: you give a prompt to Claude. Claude writes a script file, runs Blender from the command line, Blender writes image and video files, Claude looks at the files and repeats.">
   <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#94a3b8"/></marker></defs>
   <g font-size="14">
     <rect x="10" y="120" width="120" height="70" rx="10" fill="#1e293b" stroke="#7dd3fc"/>
@@ -125,16 +125,16 @@
     <path d="M550 155 H646"/>
   </g>
   <g stroke="#94a3b8" stroke-width="2" fill="none" stroke-dasharray="5 4" marker-end="url(#ar)">
-    <path d="M400 275 C 300 300, 260 260, 262 214"/>
-    <path d="M720 190 C 720 300, 380 330, 280 214"/>
+    <path d="M400 261 H300 Q262 261 262 216"/>
+    <path d="M720 192 V320 Q720 336 704 336 H251 Q235 336 235 320 V216"/>
   </g>
   <g font-size="12" fill="#cbd5e1">
     <text x="318" y="72" transform="rotate(-20 318 72)">1 writes</text>
     <text x="352" y="146">2 runs</text>
     <text x="482" y="213">3 saves</text>
     <text x="578" y="146">4 prints</text>
-    <text x="268" y="296">5 Claude opens the images</text>
-    <text x="520" y="318">6 and reads the text, then fixes the recipe and goes back to step 1</text>
+    <text x="392" y="283" text-anchor="end">5 Claude opens the images</text>
+    <text x="470" y="358" text-anchor="middle">6 Claude reads the text, fixes the recipe, and starts again at step 1</text>
   </g>
 </svg>
 </div>
