@@ -6,6 +6,10 @@ A low-poly, pastel cookie shop at night, built entirely by a Python script in Bl
 
 The animation above plays right here. **Click it to open the full video player** (MP4 with play, pause, and fullscreen controls): https://az9713.github.io/Claude-blender-demo/
 
+## The neighborhood tour
+
+A 40-second tour of ten shops on one street, with the cookie shop in the middle. The camera visits every shop for the same time. Watch it, and jump to any shop: https://az9713.github.io/Claude-blender-demo/neighborhood.html
+
 ## How Claude and Blender made this
 
 New to Blender? Read the step-by-step explainer. It shows every step with its inputs and outputs, and the real messages Claude and Blender exchanged, including the errors: https://az9713.github.io/Claude-blender-demo/how-it-works.html
