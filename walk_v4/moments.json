@@ -1,0 +1,16 @@
+{
+  "note": "Shared schedule for batch 3. hit = frame where the signature action peaks (on a beat: 8.5 + 12.5*k). Both the picture agent (fx_moments.py) and the sound agent (sfx_mix.py) read this file. Do not change frames without telling both.",
+  "shops": [
+    {"shop": "toy",    "hit": 221,  "action": "toy train circles in the window, music-box ting",  "sfx": "music_box_ting"},
+    {"shop": "book",   "hit": 321,  "action": "book pages flutter open on the display stand",     "sfx": "page_flutter"},
+    {"shop": "ice",    "hit": 421,  "action": "sprinkle cone tips, sprinkles fall",              "sfx": "scoop_plop"},
+    {"shop": "candy",  "hit": 521,  "action": "jar lid pops, candies jump",                      "sfx": "sparkle_jar"},
+    {"shop": "cookie", "hit": 621,  "action": "steam rises from the cookie tray, oven ding",      "sfx": "oven_ding"},
+    {"shop": "pet",    "hit": 721,  "action": "fish in the tank flick, bubble pop",              "sfx": "bubble_pop"},
+    {"shop": "comic",  "hit": 821,  "action": "POW burst flashes on the sign side",              "sfx": "pow_hit"},
+    {"shop": "train",  "hit": 921,  "action": "toy train puffs a steam ring, whistle",            "sfx": "train_toot"},
+    {"shop": "bike",   "hit": 1021, "action": "bell ring, front wheel spins",                    "sfx": "bike_bell"},
+    {"shop": "arcade", "hit": 1121, "action": "screen colours flash on the beat, coin blip",     "sfx": "coin_blip"}
+  ],
+  "finale": {"note": "fx_finale.py owns the last shot; read walk_beats.json for what the last bar is. sfx_mix.py adds a short soft chime on the title card frame given by fx_finale (written to finale.json: {\"title_frame\": N})."}
+}

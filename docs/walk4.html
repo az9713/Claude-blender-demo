@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>The Morning Walk, Version 4 - Blender Shop Street</title>
+<style>
+  :root { --bg:#0f172a; --card:#1e293b; --text:#e2e8f0; --text2:#cbd5e1; --muted:#94a3b8; --a1:#fb923c; --a2:#2dd4bf; --line:#334155; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  main { max-width: 960px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); margin: 0 0 8px; color: var(--a1); line-height: 1.2; }
+  p.lede { color: var(--text2); margin: 0 0 24px; max-width: 65ch; }
+  .player { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+  video { display: block; width: 100%; height: auto; border-radius: 8px; background: #000; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  a.btn, button { display: inline-block; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--a2); text-decoration: none; font: inherit; font-weight: 600; cursor: pointer; }
+  a.btn:hover, button:hover, a.btn:focus-visible, button:focus-visible { border-color: var(--a2); outline: none; }
+  h2 { font-size: 1.1rem; color: var(--a2); margin: 32px 0 8px; }
+  ul { margin: 0; padding-left: 1.2em; color: var(--text2); }
+  li { margin: 4px 0; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-top: 24px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>The Morning Walk, Version 4</h1>
+  <p class="lede">The same 60-second walk past ten shops, with a small action at each shop on the beat of the music, a short sound effect for each action, people who react as you pass, dancers, drifting music notes, and a confetti finish with the title card "Kevin Cookie Company". Use headphones: the sound leans toward the shop you pass.</p>
+
+  <div class="player">
+    <video id="v" controls playsinline preload="metadata" poster="walk4-poster.jpg">
+      <source src="Walk_v4.mp4" type="video/mp4">
+      Your browser cannot play this video. Use the download link below.
+    </video>
+  </div>
+
+  <h2>Jump to a shop action</h2>
+  <div class="row">
+    <button data-t="9.2">1. Toy Box (9.2 s)</button>
+    <button data-t="13.4">2. Books (13.4 s)</button>
+    <button data-t="17.5">3. Ice cream (17.5 s)</button>
+    <button data-t="21.7">4. Candy (21.7 s)</button>
+    <button data-t="25.9">5. Cookie (25.9 s)</button>
+    <button data-t="30">6. Pet shop (30.0 s)</button>
+    <button data-t="34.2">7. Comics (34.2 s)</button>
+    <button data-t="38.4">8. Trains (38.4 s)</button>
+    <button data-t="42.5">9. Bikes (42.5 s)</button>
+    <button data-t="46.7">10. Arcade (46.7 s)</button>
+    <button data-t="53.5">Finale (53.5 s)</button>
+  </div>
+
+  <div class="row">
+    <a class="btn" href="Walk_v4.mp4" download>Download MP4</a>
+    <a class="btn" href="walk.html">Version 1 of the walk</a>
+    <a class="btn" href="https://github.com/az9713/Claude-blender-demo/tree/main/walk_v4">View the source</a>
+  </div>
+
+  <h2>Watch for</h2>
+  <ul>
+    <li>9.2 s: a toy train circles on a wall track above the Toy Box sign.</li>
+    <li>13.4 s: pages fan open on a lectern outside the book shop.</li>
+    <li>17.5 s: the ice-cream cone tips and sprinkles fall onto the awning.</li>
+    <li>21.7 s: the candy jar lid pops and the candies jump.</li>
+    <li>25.9 s: a board of six cookies in the upper window sends up thin steam, with an oven ding.</li>
+    <li>30.0 s: fish flick in a wall tank, and bubbles pop.</li>
+    <li>34.2 s: a POW burst appears beside the comic shop sign.</li>
+    <li>38.4 s: a toy train on a shelf puffs a steam ring, with a whistle.</li>
+    <li>42.5 s: the front wheel of the bike emblem spins, and a gold bell rings.</li>
+    <li>46.7 s: the arcade screen changes colour, with a coin blip.</li>
+    <li>53.5 s to 60 s: confetti falls, then the title card "Kevin Cookie Company" appears at 56.1 s with a soft chime.</li>
+  </ul>
+
+  <h2>Known problems</h2>
+  <ul>
+    <li>The light-shaft haze is nearly invisible.</li>
+    <li>Some sound effects are quiet against the music.</li>
+    <li>A few reactions are small, for example the dog at 41.0 s.</li>
+    <li>The dancers overlap their partners for a few frames at 25.4 s to 26.1 s and at about 46 s.</li>
+  </ul>
+
+  <p class="meta">1280x720 web copy of the 1920x1080 render, 24 fps, H.264, 60 seconds, with sound, 11.8 MB. Rendered with EEVEE in Blender 5.3. Version 4 render time: about 5.7 s per frame on an RTX 3050.</p>
+</main>
+<script>
+  var v = document.getElementById('v');
+  document.querySelectorAll('button[data-t]').forEach(function (b) {
+    b.addEventListener('click', function () { v.currentTime = Math.max(0, parseFloat(b.dataset.t) - 1); v.play(); });
+  });
+</script>
+</body>
+</html>
