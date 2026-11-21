@@ -33,7 +33,7 @@ The 5-second night render, restyled five times by an AI video model on [fal](htt
 </tr>
 </table>
 
-Each picture is one frame from its video. The five restyled clips are AI-generated and have no sound. For the explanation of each style, the prompts, how Claude, Blender, FFmpeg and fal work together, and the cost (about $3.15 for all five clips), read: https://az9713.github.io/Claude-blender-demo/styles.html
+Each picture is one frame from its video. The five restyled clips are AI-generated and have no sound. For the explanation of each style, the prompts, how Claude, Blender, FFmpeg and fal work together (an interactive, animated diagram), and the cost (about $3.15 for all five clips), read: https://az9713.github.io/Claude-blender-demo/styles.html
 
 ## How Claude and Blender made this
 

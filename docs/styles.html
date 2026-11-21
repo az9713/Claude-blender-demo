@@ -30,6 +30,38 @@
   code { color: var(--a1); font-size: 0.92em; }
   .note { color: var(--muted); font-size: 0.9rem; }
   a { color: var(--a2); }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .btn { padding: 7px 13px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--text); font: inherit; font-size: 0.92rem; font-weight: 600; cursor: pointer; }
+  .btn:hover, .btn:focus-visible { border-color: var(--a2); outline: none; }
+  .btn.f-on, .steps .btn[aria-current="step"] { border-color: var(--a1); color: var(--a1); }
+  .sw { display: inline-block; width: 18px; height: 4px; border-radius: 2px; margin-right: 7px; vertical-align: middle; }
+  .diagram { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 8px; overflow-x: auto; }
+  #dg { display: block; width: 100%; min-width: 720px; height: auto; }
+  .node { cursor: pointer; outline: none; }
+  .node rect { fill: var(--bg); stroke: var(--line); stroke-width: 2; transition: fill .2s, stroke-width .2s; }
+  .node .t { fill: var(--text); font: 600 15px system-ui, sans-serif; text-anchor: middle; }
+  .node .s { fill: var(--muted); font: 12px system-ui, sans-serif; text-anchor: middle; }
+  .node.k-local rect { stroke: var(--a1); }
+  .node.k-fal rect { stroke: var(--a2); }
+  .node.k-agent rect { stroke: var(--text); stroke-width: 3; }
+  .node.k-shell rect { stroke: var(--a1); stroke-dasharray: 7 4; }
+  .node.k-mcp rect { stroke: var(--a2); stroke-dasharray: 7 4; }
+  .node.k-ext rect { stroke: #a78bfa; }
+  .node.on rect { fill: #2a3a55; stroke-width: 4; }
+  .node.sel rect, .node:focus-visible rect { stroke: #fff; stroke-width: 4; }
+  .edge { fill: none; stroke-width: 3; opacity: .5; transition: opacity .2s; }
+  .edge.on { opacity: 1; stroke-width: 4.5; }
+  .edge.dim, .elabel.dim { opacity: .1; }
+  .ch-chat { stroke: #94a3b8; } .ch-shell { stroke: #fb923c; } .ch-mcp { stroke: #2dd4bf; }
+  .ch-http { stroke: #a78bfa; } .ch-fal { stroke: #2dd4bf; stroke-dasharray: 6 6; }
+  .elabel { fill: var(--text2); font: 11px system-ui, sans-serif; text-anchor: middle; paint-order: stroke; stroke: var(--card); stroke-width: 5px; }
+  .pkt text { font: 700 12px system-ui, sans-serif; fill: #0f172a; text-anchor: middle; }
+  .panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; margin-top: 12px; }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+  .panel h3 { margin: 0 0 6px; }
+  .panel p { margin: 6px 0; }
+  .panel code { word-break: break-word; }
+  @media (prefers-reduced-motion: reduce) { .node rect, .edge { transition: none; } }
 </style>
 </head>
 <body>
@@ -98,18 +130,32 @@
   <p class="note">The five styles were chosen from memory of known trends, not from view counts. The 3 styles that were not used: live-action cinematic, watercolor storybook, paper-cut diorama.</p>
 
   <h2>How the tools work together</h2>
-  <p>Each tool does one job and passes a file to the next tool.</p>
-  <ol>
-    <li><b>Claude Code</b> (the AI agent in the terminal) wrote the Python script <code>build_cookie_shop.py</code>. It also ran every command below and checked the results.</li>
-    <li><b>Blender 5.3</b> ran in the background (<code>blender -b -P build_cookie_shop.py -- anim</code>). It built the scene, rendered 120 frames with EEVEE, and used its built-in FFmpeg encoder to write <code>CookieShop.mp4</code> (1920x1080, 24 fps, 5 s, no audio).</li>
-    <li><b>ffprobe</b> (part of <b>FFmpeg</b>) read the file and showed one video stream and no audio stream. So there was no music to join back later.</li>
-    <li><b>fal</b> is a service that runs AI media models. Claude used the fal connector tools: <code>upload_file</code> returned a signed upload address, and <code>curl</code> sent the 3.1 MB video there (HTTP 200).</li>
-    <li>Claude then queued one job per style on the model <code>fal-ai/kling-video/o1/standard/video-to-video/edit</code> (Kling O1, Standard). Each job has the video address and a text prompt. The model keeps the motion of the input and changes the look. Claude ran the first job alone as a test, then queued the other four at the same time. <code>wait_for_jobs</code> checked them until they finished. Each job took about 6 to 9 minutes.</li>
-    <li><code>curl</code> downloaded the five results. <b>FFmpeg</b> built a contact sheet of one frame from each clip. Claude looked at that image to check the sign text, the sky and the style.</li>
-    <li>For this page, FFmpeg copied each clip without re-encoding (the Kling "AI-generated" label inside each file is kept) and cut one poster frame from each. <b>git</b> and the <b>GitHub CLI</b> pushed the files to this repository. <b>GitHub Pages</b> serves this page from the <code>docs/</code> folder.</li>
-  </ol>
+  <p>This diagram shows one request moving through the tools. Press <b>Play</b> to watch all 10 steps, or pick a step. Click any box to see what that part does. A line shows who talks to whom. The line colour shows how they talk.</p>
+  <div class="row" id="legend" role="group" aria-label="Show one kind of connection">
+    <button class="btn f-on" data-f="all">All</button>
+    <button class="btn" data-f="chat"><i class="sw" style="background:#94a3b8"></i>Chat</button>
+    <button class="btn" data-f="shell"><i class="sw" style="background:#fb923c"></i>Shell command</button>
+    <button class="btn" data-f="mcp"><i class="sw" style="background:#2dd4bf"></i>MCP tool call</button>
+    <button class="btn" data-f="http"><i class="sw" style="background:#a78bfa"></i>Direct HTTPS</button>
+    <button class="btn" data-f="fal"><i class="sw" style="background:#2dd4bf"></i>Inside fal</button>
+  </div>
+  <div class="diagram">
+    <svg id="dg" viewBox="0 0 1000 600" role="img" aria-label="Diagram. Claude Code talks to Blender, FFmpeg, curl and git through a shell. It talks to fal through an MCP server. curl sends files to fal storage. git pushes to GitHub Pages."></svg>
+  </div>
+  <div class="row ctrl">
+    <button class="btn" id="prev">&#9664; Previous</button>
+    <button class="btn" id="play">&#9654; Play</button>
+    <button class="btn" id="next">Next &#9654;</button>
+    <button class="btn" id="speed">Speed 1x</button>
+  </div>
+  <div class="row steps" id="steps" role="group" aria-label="Steps"></div>
+  <div class="panels">
+    <div class="panel" id="stepPanel" aria-live="polite"></div>
+    <div class="panel" id="nodePanel"></div>
+  </div>
+  <p class="note"><b>Is it MCP?</b> Only the fal part is. MCP (Model Context Protocol) is a standard way for an AI agent to call the tools of a service. Claude Code calls fal through the fal MCP server. Blender was not connected through MCP. It ran in the background from a shell command. FFmpeg, curl and git also ran as shell commands. The fal MCP server cannot read files on your PC, so the shell (curl) sends the video to fal.</p>
 
-  <h2>Cost</h2>
+<h2>Cost</h2>
   <table>
     <tr><th>Item</th><th>Amount</th></tr>
     <tr><td>Model rate</td><td>$0.126 per second of video (Kling O1 Standard, as listed by fal on 2026-11-21 for this account)</td></tr>
@@ -130,5 +176,226 @@
 
   <p class="meta note">Clips: 1280x720, 24 fps, H.264, 121 frames (5.04 s), 5.2 to 8.3 MB each. <a href="https://github.com/az9713/Claude-blender-demo">Back to the repository</a> · <a href="index.html">Original video page</a></p>
 </main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+(function () {
+  var NS = 'http://www.w3.org/2000/svg';
+  var G = window.gsap;                       // animation library; the diagram still works without it
+  var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var COLOR = { chat: '#94a3b8', shell: '#fb923c', mcp: '#2dd4bf', http: '#a78bfa', fal: '#2dd4bf' };
+
+  var NODES = {
+    you:      { x: 100, y: 70,  w: 150, h: 56,  k: 'actor', t: 'You', s: 'the user' },
+    claude:   { x: 100, y: 330, w: 180, h: 120, k: 'agent', t: 'Claude Code', s: 'AI agent in the terminal' },
+    shell:    { x: 380, y: 190, w: 170, h: 64,  k: 'shell', t: 'Shell (Bash tool)', s: 'runs commands on your PC' },
+    mcp:      { x: 380, y: 500, w: 170, h: 64,  k: 'mcp',   t: 'fal MCP server', s: 'typed tools for fal' },
+    blender:  { x: 660, y: 60,  w: 180, h: 56,  k: 'local', t: 'Blender 5.3', s: 'headless, Python script' },
+    ffmpeg:   { x: 660, y: 150, w: 180, h: 56,  k: 'local', t: 'FFmpeg + ffprobe', s: 'inspect, cut, copy' },
+    git:      { x: 660, y: 240, w: 180, h: 56,  k: 'local', t: 'git + gh', s: 'commit and push' },
+    curl:     { x: 660, y: 330, w: 180, h: 56,  k: 'local', t: 'curl', s: 'send and fetch files' },
+    kling:    { x: 790, y: 500, w: 200, h: 64,  k: 'fal',   t: 'Kling O1 on fal', s: 'AI video model' },
+    falstore: { x: 905, y: 330, w: 150, h: 56,  k: 'fal',   t: 'fal file storage', s: 'input and output files' },
+    pages:    { x: 905, y: 240, w: 150, h: 56,  k: 'ext',   t: 'GitHub Pages', s: 'public website' }
+  };
+
+  var EDGES = [
+    ['you', 'claude', 'chat', 'ask'],
+    ['claude', 'shell', 'shell', 'Bash tool'],
+    ['claude', 'mcp', 'mcp', 'MCP'],
+    ['shell', 'blender', 'shell'],
+    ['shell', 'ffmpeg', 'shell'],
+    ['shell', 'git', 'shell'],
+    ['shell', 'curl', 'shell'],
+    ['mcp', 'kling', 'mcp', 'fal API'],
+    ['curl', 'falstore', 'http', 'HTTPS'],
+    ['kling', 'falstore', 'fal', 'inside fal'],
+    ['git', 'pages', 'http', 'HTTPS']
+  ];
+
+  var STEPS = [
+    { n: 'Ask', title: 'You ask',
+      text: 'You tell Claude Code, in plain words, to restyle the cookie-shop video in several styles. Claude Code is the only part that talks to you. In this project it asked for your choice of source and styles before it spent any credit.',
+      moves: [['you', 'claude', 'restyle in 5 styles']] },
+    { n: 'Build', title: 'Build the source video',
+      text: 'Claude wrote the Python script build_cookie_shop.py. It then ran Blender in the background through the shell: blender -b -P build_cookie_shop.py -- anim. Blender built the scene, rendered 120 frames with EEVEE (about 5 minutes), and used its built-in FFmpeg encoder to write CookieShop.mp4. This step happened earlier in the project. It did not use MCP.',
+      moves: [['claude', 'shell', 'blender -b -P ...'], ['shell', 'blender', 'run script'], ['blender', 'shell', 'CookieShop.mp4'], ['shell', 'claude', 'done']] },
+    { n: 'Inspect', title: 'Inspect the file',
+      text: 'ffprobe (part of FFmpeg) reported 1920x1080, 24 fps, 5.0 s, one video stream and no audio stream. So there is no sound to join back later.',
+      moves: [['claude', 'shell', 'ffprobe'], ['shell', 'ffmpeg', 'read file'], ['ffmpeg', 'shell', 'no audio track'], ['shell', 'claude', 'result']] },
+    { n: 'Model', title: 'Choose a model and a price',
+      text: 'Claude asked the fal MCP server to search the fal catalog and to price a model (search_models, recommend_model, get_pricing). The answer was Kling O1 Standard, video-to-video edit, at $0.126 per second. Nothing was spent in this step.',
+      moves: [['claude', 'mcp', 'search + price'], ['mcp', 'kling', 'catalog query'], ['kling', 'mcp', '$0.126 / s'], ['mcp', 'claude', 'model + price']] },
+    { n: 'Upload', title: 'Upload the video',
+      text: 'The MCP server cannot read files on your PC. So upload_file only returns a signed upload address. Claude then runs curl through the shell to send the 3.1 MB file straight to fal storage (HTTP 200). The file bytes do not pass through the MCP server.',
+      moves: [['claude', 'mcp', 'upload_file'], ['mcp', 'claude', 'signed URL'], ['claude', 'shell', 'curl PUT'], ['shell', 'curl', 'send file'], ['curl', 'falstore', 'CookieShop.mp4']] },
+    { n: 'Submit', title: 'Submit the jobs',
+      text: 'Claude called submit_job once (the Pixar test) and then submit_jobs for the other four styles. Each job holds the video address and a text prompt. fal queues the jobs on Kling O1 Standard.',
+      moves: [['claude', 'mcp', 'submit_jobs'], ['mcp', 'kling', 'video URL + prompt']] },
+    { n: 'Wait', title: 'Wait for the result',
+      text: 'wait_for_jobs checks the jobs for up to 40 seconds per call. Claude called it again until all jobs were done. Each job took about 6 to 9 minutes. Kling keeps the motion of the input and changes the look. It writes the results to fal storage.',
+      moves: [['claude', 'mcp', 'wait_for_jobs'], ['mcp', 'kling', 'status?'], ['kling', 'mcp', 'in progress'], ['kling', 'falstore', '5 styled clips'], ['mcp', 'claude', 'done + URLs']] },
+    { n: 'Download', title: 'Download the clips',
+      text: 'Claude ran curl through the shell to download the five MP4 files (about 5 to 8 MB each) from fal storage to the PC.',
+      moves: [['claude', 'shell', 'curl GET x5'], ['shell', 'curl', 'fetch'], ['falstore', 'curl', '5 clips'], ['curl', 'shell', 'saved'], ['shell', 'claude', 'files on disk']] },
+    { n: 'Check', title: 'Check the result',
+      text: 'FFmpeg cut one frame from each clip and joined the frames into one contact-sheet picture. Claude read the picture with its image viewer and checked the sign text, the sky and the style. This found the wrong sign text in the Pixar clip and the bright sky in the Ghibli clip.',
+      moves: [['claude', 'shell', 'ffmpeg contact sheet'], ['shell', 'ffmpeg', 'cut frames'], ['ffmpeg', 'shell', 'sheet.png'], ['shell', 'claude', 'picture to read']] },
+    { n: 'Publish', title: 'Publish',
+      text: 'Claude ran git through the shell: commit, then push to the public repository. GitHub Pages built the site from the docs folder in about 1 minute. The page and the videos are live.',
+      moves: [['claude', 'shell', 'git push'], ['shell', 'git', 'commit + push'], ['git', 'pages', 'docs/ files']] }
+  ];
+
+  var INFO = {
+    you: ['You', 'Give the goal in plain language. You approve actions that cost money or publish files. You never write code in this flow.', 'Talks to: Claude Code (chat).'],
+    claude: ['Claude Code', 'An AI agent that runs in your terminal. It writes scripts, calls tools, reads the results (including pictures) and decides the next step. It does not render, encode or generate video itself.', 'Talks to: the Shell (Bash tool) and the fal MCP server. Does not talk to Blender, FFmpeg or Kling directly.'],
+    shell: ['Shell (Bash tool)', 'A tool that lets Claude run ordinary commands on your PC and read their output. Blender, FFmpeg, curl and git all run through it.', 'Channel: shell command (not MCP).'],
+    mcp: ['fal MCP server', 'MCP (Model Context Protocol) is a standard that lets an AI agent call the tools of a service through typed calls. The fal MCP server offers tools such as search_models, get_pricing, upload_file, submit_jobs and wait_for_jobs. It uses your fal account, so no key appears in the commands.', 'Channel: MCP tool call. It cannot read files on your PC.'],
+    blender: ['Blender 5.3', 'A 3D program. It ran headless (no window) with a Python script that Claude wrote: it builds the cookie shop, renders 120 frames and encodes CookieShop.mp4.', 'Input: build_cookie_shop.py. Output: CookieShop.mp4 (1920x1080, 24 fps, 5 s, no sound). It was not connected through MCP. A live Blender link was never connected in this project.'],
+    ffmpeg: ['FFmpeg + ffprobe', 'FFmpeg processes video. ffprobe reads facts about a file.', 'Used here to read the stream list (no audio), to cut one frame from each clip, to build the contact sheet, to copy the clips without re-encoding, and to make poster images.'],
+    git: ['git + gh', 'git records the files in a commit and pushes them. gh (GitHub CLI) cloned the repository.', 'Input: docs/styles.html, 5 MP4 files, thumbnails. Output: a commit on the main branch of the public repository.'],
+    curl: ['curl', 'A command that moves files over HTTP. Claude uses it because the MCP server cannot read your disk.', 'Sends CookieShop.mp4 to the signed address on fal storage, and downloads the five results. This traffic goes straight to fal, not through the MCP server.'],
+    kling: ['Kling O1 on fal', 'The AI video model: fal-ai/kling-video/o1/standard/video-to-video/edit. It takes a 3 to 10 second video and a text prompt, keeps the motion, and changes the look.', 'Rate: $0.126 per second. Five 5 s clips are about $3.15 (estimate). It drops the audio unless keep_audio is set.'],
+    falstore: ['fal file storage', 'A cloud file store on fal. It holds the input video and the output clips. Each file has an address (URL).', 'Receives the upload from curl. Receives the results from Kling. Serves the downloads.'],
+    pages: ['GitHub Pages', 'A free web host. It serves the docs folder of the repository as a website.', 'Build takes about 1 minute after a push. This page and the videos are served from it.']
+  };
+
+  var svg = document.getElementById('dg');
+  function el(name, attrs, parent) {
+    var e = document.createElementNS(NS, name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function clip(n, tx, ty) {
+    var dx = tx - n.x, dy = ty - n.y;
+    var t = Math.min((n.w / 2 + 5) / (Math.abs(dx) || 1e-9), (n.h / 2 + 5) / (Math.abs(dy) || 1e-9));
+    return [n.x + dx * t, n.y + dy * t];
+  }
+
+  var gE = el('g', {}, svg), gN = el('g', {}, svg), gP = el('g', {}, svg);
+  var edgeMap = {}, edgeEls = [], nodeEls = {};
+
+  EDGES.forEach(function (d) {
+    var A = NODES[d[0]], B = NODES[d[1]], a = clip(A, B.x, B.y), b = clip(B, A.x, A.y);
+    var ln = el('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], 'class': 'edge ch-' + d[2] }, gE);
+    var rec = { el: ln, a: a, b: b, from: d[0], ch: d[2] };
+    edgeMap[d[0] + '>' + d[1]] = rec; edgeMap[d[1] + '>' + d[0]] = rec; edgeEls.push(rec);
+    if (d[3]) {
+      var lb = el('text', { x: (a[0] + b[0]) / 2, y: (a[1] + b[1]) / 2 - 7, 'class': 'elabel' }, gE);
+      lb.textContent = d[3]; rec.label = lb;
+    }
+  });
+
+  Object.keys(NODES).forEach(function (key) {
+    var n = NODES[key];
+    var g = el('g', { 'class': 'node k-' + n.k, tabindex: 0, role: 'button', 'aria-label': n.t + ': ' + n.s }, gN);
+    el('rect', { x: n.x - n.w / 2, y: n.y - n.h / 2, width: n.w, height: n.h, rx: 12 }, g);
+    var t = el('text', { x: n.x, y: n.y - (n.h > 70 ? 4 : 2), 'class': 't' }, g); t.textContent = n.t;
+    var s = el('text', { x: n.x, y: n.y + 16 + (n.h > 70 ? 6 : 0), 'class': 's' }, g); s.textContent = n.s;
+    g.addEventListener('click', function () { showNode(key); });
+    g.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); showNode(key); } });
+    nodeEls[key] = g;
+  });
+
+  var stepsBox = document.getElementById('steps'), stepBtns = [];
+  STEPS.forEach(function (s, i) {
+    var b = document.createElement('button');
+    b.className = 'btn'; b.textContent = (i + 1) + '. ' + s.n;
+    b.addEventListener('click', function () { playing = false; setPlay(); show(i, true); });
+    stepsBox.appendChild(b); stepBtns.push(b);
+  });
+
+  var cur = 0, tl = null, playing = false, speed = 1, pending = null, timer = null;
+  var playBtn = document.getElementById('play');
+
+  function setPlay() { playBtn.innerHTML = playing ? '&#10074;&#10074; Pause' : '&#9654; Play'; }
+  function clearOn() {
+    Object.keys(nodeEls).forEach(function (k) { nodeEls[k].classList.remove('on'); });
+    edgeEls.forEach(function (r) { r.el.classList.remove('on'); });
+  }
+  function light(from, to) {
+    clearOn();
+    nodeEls[from].classList.add('on'); nodeEls[to].classList.add('on');
+    var r = edgeMap[from + '>' + to]; if (r) r.el.classList.add('on');
+  }
+  function stop() {
+    if (tl) { tl.kill(); tl = null; }
+    if (pending) { pending.kill(); pending = null; }
+    if (timer) { clearTimeout(timer); timer = null; }
+    while (gP.firstChild) gP.removeChild(gP.firstChild);
+  }
+  function showNode(key) {
+    Object.keys(nodeEls).forEach(function (k) { nodeEls[k].classList.toggle('sel', k === key); });
+    var i = INFO[key], p = document.getElementById('nodePanel');
+    p.innerHTML = '<h3></h3><p></p><p class="note"></p>';
+    p.children[0].textContent = i[0]; p.children[1].textContent = i[1]; p.children[2].textContent = i[2];
+  }
+  function afterStep() {
+    if (!playing) return;
+    if (cur >= STEPS.length - 1) { playing = false; setPlay(); return; }
+    var go = function () { show(cur + 1, true); };
+    if (G && !RM) pending = G.delayedCall(0.9 / speed, go); else timer = setTimeout(go, 1500);
+  }
+
+  function show(i, animate) {
+    stop(); cur = i;
+    stepBtns.forEach(function (b, j) { if (j === i) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
+    var s = STEPS[i], p = document.getElementById('stepPanel');
+    p.innerHTML = '<h3></h3><p></p><p class="note"></p>';
+    p.children[0].textContent = 'Step ' + (i + 1) + ' of ' + STEPS.length + ': ' + s.title;
+    p.children[1].textContent = s.text;
+    p.children[2].textContent = 'Path: ' + s.moves.map(function (m) { return NODES[m[0]].t; }).filter(function (v, j, a) { return a.indexOf(v) === j; }).join(' > ');
+    clearOn();
+    if (!animate) { return; }
+    if (!G || RM) {                                   // no motion: light the whole path at once
+      s.moves.forEach(function (m) { nodeEls[m[0]].classList.add('on'); nodeEls[m[1]].classList.add('on'); var r = edgeMap[m[0] + '>' + m[1]]; if (r) r.el.classList.add('on'); });
+      if (playing) timer = setTimeout(afterStep, 3500);
+      return;
+    }
+    tl = G.timeline({ onComplete: afterStep });
+    s.moves.forEach(function (m) {
+      var r = edgeMap[m[0] + '>' + m[1]];
+      var fwd = r.from === m[0], a = fwd ? r.a : r.b, b = fwd ? r.b : r.a;
+      var g = el('g', { 'class': 'pkt', opacity: 0 }, gP);
+      var rc = el('rect', { rx: 9, height: 20, y: -32, fill: COLOR[r.ch] }, g);
+      var tx = el('text', { y: -17 }, g); tx.textContent = m[2];
+      var w = (tx.getComputedTextLength ? tx.getComputedTextLength() : m[2].length * 7) + 16;
+      rc.setAttribute('width', w); rc.setAttribute('x', -w / 2);
+      el('circle', { r: 7, fill: COLOR[r.ch], stroke: '#fff', 'stroke-width': 2 }, g);
+      G.set(g, { x: a[0], y: a[1] });
+      tl.call(function () { light(m[0], m[1]); })
+        .to(g, { opacity: 1, duration: 0.2 })
+        .to(g, { x: b[0], y: b[1], duration: 1.0, ease: 'power2.inOut' }, '<0.1')
+        .to(g, { opacity: 0, duration: 0.25 }, '>0.15');
+    });
+    tl.timeScale(speed);
+  }
+
+  document.getElementById('next').addEventListener('click', function () { playing = false; setPlay(); show(Math.min(cur + 1, STEPS.length - 1), true); });
+  document.getElementById('prev').addEventListener('click', function () { playing = false; setPlay(); show(Math.max(cur - 1, 0), true); });
+  playBtn.addEventListener('click', function () {
+    if (playing) { playing = false; setPlay(); if (tl) tl.pause(); if (pending) { pending.kill(); pending = null; } return; }
+    playing = true; setPlay();
+    if (tl && tl.progress() < 1) tl.resume(); else show(cur >= STEPS.length - 1 ? 0 : cur, true);
+  });
+  document.getElementById('speed').addEventListener('click', function (ev) {
+    speed = speed === 1 ? 2 : (speed === 2 ? 0.5 : 1);
+    ev.target.textContent = 'Speed ' + speed + 'x';
+    if (tl) tl.timeScale(speed);
+  });
+  document.querySelectorAll('#legend button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var f = b.getAttribute('data-f');
+      document.querySelectorAll('#legend button').forEach(function (x) { x.classList.toggle('f-on', x === b); });
+      edgeEls.forEach(function (r) {
+        var dim = f !== 'all' && r.ch !== f;
+        r.el.classList.toggle('dim', dim); if (r.label) r.label.classList.toggle('dim', dim);
+      });
+    });
+  });
+
+  show(0, false); showNode('claude'); setPlay();
+})();
+</script>
 </body>
 </html>
