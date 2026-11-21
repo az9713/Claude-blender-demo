@@ -18,7 +18,22 @@ Version 4 adds a small action and sound at each shop on the beat, people who rea
 
 ## The cookie shop in five styles (made with fal)
 
-The 5-second night render, restyled five times by an AI video model on [fal](https://fal.ai) (Kling O1 Standard): Pixar 3D, Studio Ghibli anime, 1980s VHS, tilt-shift miniature, and claymation. The page explains each style, shows the prompts, explains how Claude, Blender, FFmpeg and fal work together, and gives the cost (about $3.15 for all five clips): https://az9713.github.io/Claude-blender-demo/styles.html
+The 5-second night render, restyled five times by an AI video model on [fal](https://fal.ai) (Kling O1 Standard). **Click any picture to play the video.** GitHub cannot play video inside a README, so each picture opens the MP4 in your browser.
+
+<table>
+<tr>
+<td align="center"><a href="https://az9713.github.io/Claude-blender-demo/CookieShop.mp4"><img src="docs/styles/thumbs/original.jpg" width="300" alt="Original Blender render. Click to play."></a></td>
+<td align="center"><a href="https://az9713.github.io/Claude-blender-demo/styles/pixar.mp4"><img src="docs/styles/thumbs/pixar.jpg" width="300" alt="Pixar 3D style. Click to play."></a></td>
+<td align="center"><a href="https://az9713.github.io/Claude-blender-demo/styles/ghibli.mp4"><img src="docs/styles/thumbs/ghibli.jpg" width="300" alt="Studio Ghibli anime style. Click to play."></a></td>
+</tr>
+<tr>
+<td align="center"><a href="https://az9713.github.io/Claude-blender-demo/styles/vhs80s.mp4"><img src="docs/styles/thumbs/vhs80s.jpg" width="300" alt="1980s VHS style. Click to play."></a></td>
+<td align="center"><a href="https://az9713.github.io/Claude-blender-demo/styles/tiltshift.mp4"><img src="docs/styles/thumbs/tiltshift.jpg" width="300" alt="Tilt-shift miniature style. Click to play."></a></td>
+<td align="center"><a href="https://az9713.github.io/Claude-blender-demo/styles/claymation.mp4"><img src="docs/styles/thumbs/claymation.jpg" width="300" alt="Claymation style. Click to play."></a></td>
+</tr>
+</table>
+
+Each picture is one frame from its video. The five restyled clips are AI-generated and have no sound. For the explanation of each style, the prompts, how Claude, Blender, FFmpeg and fal work together, and the cost (about $3.15 for all five clips), read: https://az9713.github.io/Claude-blender-demo/styles.html
 
 ## How Claude and Blender made this
 
