@@ -16,6 +16,10 @@ A relaxing 60-second Saturday-morning stroll past the same ten shops, with lofi 
 
 Version 4 adds a small action and sound at each shop on the beat, people who react as you pass, dancers, music notes, and a confetti finish with the title "Kevin Cookie Company": https://az9713.github.io/Claude-blender-demo/walk4.html. Its scripts are in [walk_v4/](walk_v4/).
 
+## The cookie shop in five styles (made with fal)
+
+The 5-second night render, restyled five times by an AI video model on [fal](https://fal.ai) (Kling O1 Standard): Pixar 3D, Studio Ghibli anime, 1980s VHS, tilt-shift miniature, and claymation. The page explains each style, shows the prompts, explains how Claude, Blender, FFmpeg and fal work together, and gives the cost (about $3.15 for all five clips): https://az9713.github.io/Claude-blender-demo/styles.html
+
 ## How Claude and Blender made this
 
 New to Blender? Read the step-by-step explainer. It shows every step with its inputs and outputs, and the real messages Claude and Blender exchanged, including the errors: https://az9713.github.io/Claude-blender-demo/how-it-works.html

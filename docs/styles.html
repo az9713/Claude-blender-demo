@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>The Cookie Shop in Five Styles - fal video restyle</title>
+<style>
+  :root { --bg:#0f172a; --card:#1e293b; --text:#e2e8f0; --text2:#cbd5e1; --muted:#94a3b8; --a1:#fb923c; --a2:#2dd4bf; --line:#334155; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); margin: 0 0 8px; color: var(--a1); line-height: 1.2; }
+  h2 { font-size: 1.25rem; color: var(--a2); margin: 40px 0 8px; }
+  h3 { font-size: 1.05rem; color: var(--a1); margin: 0 0 6px; }
+  p.lede { color: var(--text2); margin: 0 0 24px; max-width: 70ch; }
+  p, li { color: var(--text2); }
+  li { margin: 6px 0; }
+  ul, ol { margin: 0; padding-left: 1.3em; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr)); gap: 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+  video { display: block; width: 100%; height: auto; border-radius: 8px; background: #000; margin-bottom: 10px; }
+  .tag { display: inline-block; font-size: 0.8rem; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 1px 10px; margin: 0 6px 6px 0; }
+  details { margin-top: 8px; }
+  summary { color: var(--a2); cursor: pointer; font-weight: 600; }
+  pre { white-space: pre-wrap; word-wrap: break-word; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px; font-size: 0.85rem; color: var(--text2); margin: 8px 0 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); color: var(--text2); vertical-align: top; }
+  th { color: var(--a2); }
+  code { color: var(--a1); font-size: 0.92em; }
+  .note { color: var(--muted); font-size: 0.9rem; }
+  a { color: var(--a2); }
+</style>
+</head>
+<body>
+<main>
+  <h1>The Cookie Shop in Five Styles</h1>
+  <p class="lede">One 5-second Blender render of the Kevin Cookie Company, restyled five times by an AI video model on fal. The camera move, the building and the people stay the same. Only the look changes. All five clips are AI-generated. They have no sound.</p>
+
+  <div class="grid">
+    <div class="card">
+      <video controls playsinline loop preload="metadata" poster="poster.jpg"><source src="CookieShop.mp4" type="video/mp4"></video>
+      <h3>Original (Blender render)</h3>
+      <p>The input for all five clips: low-poly pastel shop at night, 1920x1080, 24 fps, 5 s. Built by the script <a href="https://github.com/az9713/Claude-blender-demo/blob/main/build_cookie_shop.py"><code>build_cookie_shop.py</code></a> and rendered with EEVEE in Blender 5.3.</p>
+    </div>
+
+    <div class="card">
+      <video controls playsinline loop preload="metadata" poster="styles/pixar.jpg"><source src="styles/pixar.mp4" type="video/mp4"></video>
+      <h3>1. Pixar 3D animation</h3>
+      <span class="tag">cinematic CGI</span><span class="tag">smallest change from the source</span>
+      <p><b>What the style is.</b> The look of a Pixar feature film: soft rounded shapes, glossy materials, warm film lighting, rich colour, shallow depth of field.</p>
+      <p><b>Why it was chosen.</b> A "Disney Pixar poster" image trend spread on social media around 2023. The source is already 3D, so the model has less to invent.</p>
+      <p><b>What came out.</b> The motion follows the camera move. The sign text is wrong: it reads "Kevn Cookie Conpany". The sky is blue dusk, not night.</p>
+      <details><summary>Prompt</summary><pre>Restyle this video as a Pixar feature-film 3D animation. Keep the same camera move, the same cookie shop building, the pink facade with the big cookie emblem, the brown sign reading 'Kevin Cookie Company', the teal-and-cream striped awning, the glowing warm windows, the night sky with stars and moon, the people and the small dog. Pixar look: soft rounded shapes, subsurface skin, warm cinematic lighting, rich saturated colors, glossy detailed materials, gentle depth of field.</pre></details>
+    </div>
+
+    <div class="card">
+      <video controls playsinline loop preload="metadata" poster="styles/ghibli.jpg"><source src="styles/ghibli.mp4" type="video/mp4"></video>
+      <h3>2. Studio Ghibli hand-drawn anime</h3>
+      <span class="tag">2D painted</span><span class="tag">largest change from the source</span>
+      <p><b>What the style is.</b> Hand-painted backgrounds with a gouache look, thin ink outlines, flat cel-shaded characters, warm and calm mood.</p>
+      <p><b>Why it was chosen.</b> In March 2025 many people turned photos into "Ghibli-like" images with an AI image generator. Reported from memory, not measured.</p>
+      <p><b>What came out.</b> A convincing painted look. The sign reads correctly. The sky is bright daytime blue, although the prompt asked for a dark night sky.</p>
+      <details><summary>Prompt</summary><pre>Restyle this video as a Studio Ghibli hand-drawn anime film. Keep the same camera move, the same cookie shop building with the pink facade and big cookie emblem, the brown sign that reads exactly 'Kevin Cookie Company', the teal-and-cream striped awning, the glowing warm windows, the dark night sky with stars and a moon, the people and the small dog. Ghibli look: soft painted gouache backgrounds, delicate ink outlines, flat cel-shaded characters, warm glowing lamplight, gentle nostalgic mood.</pre></details>
+    </div>
+
+    <div class="card">
+      <video controls playsinline loop preload="metadata" poster="styles/vhs80s.jpg"><source src="styles/vhs80s.mp4" type="video/mp4"></video>
+      <h3>3. 1980s VHS camcorder</h3>
+      <span class="tag">retro film</span><span class="tag">keeps shapes and text</span>
+      <p><b>What the style is.</b> Home video from the 1980s: soft blur, scan lines, colour bleed, tape noise, faded warm colours, glowing lights.</p>
+      <p><b>Why it was chosen.</b> 1980s nostalgia is common in TV shows and in phone filters. The look is mostly colour and blur, so it keeps your shapes and text.</p>
+      <p><b>What came out.</b> The sign reads correctly and the night sky with stars is kept. The result is a warm orange glow. At this size no scan lines or tracking noise are visible, so it looks more like soft film than VHS.</p>
+      <details><summary>Prompt</summary><pre>Restyle this video as 1980s VHS camcorder footage. Keep the same camera move, the same cookie shop building with the pink facade and big cookie emblem, the brown sign that reads exactly 'Kevin Cookie Company', the teal-and-cream striped awning, the glowing warm windows, the dark night sky with stars and a moon, the people and the small dog. VHS look: real-world filmed appearance, soft blur, horizontal scan lines, chroma color bleed, tracking noise, film grain, faded warm colors, slight overexposed glow on lights.</pre></details>
+    </div>
+
+    <div class="card">
+      <video controls playsinline loop preload="metadata" poster="styles/tiltshift.jpg"><source src="styles/tiltshift.mp4" type="video/mp4"></video>
+      <h3>4. Tilt-shift miniature</h3>
+      <span class="tag">real toy model</span>
+      <p><b>What the style is.</b> A scene filmed as if it were a tiny model: a sharp band in the middle of the frame, strong blur at the top and bottom, saturated colour, plastic toy figures.</p>
+      <p><b>Why it was chosen.</b> The style was popular around 2010 to 2011 through time-lapse videos and the Instagram tilt-shift filter. Reported from memory, not measured. It suits a toy-town scene.</p>
+      <p><b>What came out.</b> A glossy plastic toy town. The sign is faint but readable. The blur band at the top and bottom is not obvious, so it reads as "toy" more than "tilt-shift".</p>
+      <details><summary>Prompt</summary><pre>Restyle this video as a real miniature toy model filmed with a tilt-shift lens. Keep the same camera move, the same cookie shop building with the pink facade and big cookie emblem, the brown sign that reads exactly 'Kevin Cookie Company', the teal-and-cream striped awning, the glowing warm windows, the dark night sky with stars and a moon, the people and the small dog. Tilt-shift look: strong blur at the top and bottom of the frame with a sharp band in the middle, saturated colors, tiny plastic toy figures, realistic miniature materials, macro photography feel.</pre></details>
+    </div>
+
+    <div class="card">
+      <video controls playsinline loop preload="metadata" poster="styles/claymation.jpg"><source src="styles/claymation.mp4" type="video/mp4"></video>
+      <h3>5. Claymation stop-motion</h3>
+      <span class="tag">handmade texture</span><span class="tag">best result</span>
+      <p><b>What the style is.</b> Plasticine models with fingerprints, felt and clay textures, slightly uneven movement, warm studio light, in the manner of Aardman (<i>Wallace &amp; Gromit</i>).</p>
+      <p><b>Why it was chosen.</b> The style is famous, but no dated viral trend of this type is known to the author. It was chosen mainly because round pastel toys suit clay.</p>
+      <p><b>What came out.</b> The clay texture is clear, the sign is correct and the building layout is kept.</p>
+      <details><summary>Prompt</summary><pre>Restyle this video as stop-motion claymation in the style of Aardman. Keep the same camera move, the same cookie shop building with the pink facade and big cookie emblem, the brown sign that reads exactly 'Kevin Cookie Company', the teal-and-cream striped awning, the glowing warm windows, the dark night sky with stars and a moon, the people and the small dog. Claymation look: plasticine surfaces with visible fingerprints, handmade clay and felt textures, slightly uneven stop-motion movement, warm studio lighting.</pre></details>
+    </div>
+  </div>
+
+  <p class="note">The five styles were chosen from memory of known trends, not from view counts. The 3 styles that were not used: live-action cinematic, watercolor storybook, paper-cut diorama.</p>
+
+  <h2>How the tools work together</h2>
+  <p>Each tool does one job and passes a file to the next tool.</p>
+  <ol>
+    <li><b>Claude Code</b> (the AI agent in the terminal) wrote the Python script <code>build_cookie_shop.py</code>. It also ran every command below and checked the results.</li>
+    <li><b>Blender 5.3</b> ran in the background (<code>blender -b -P build_cookie_shop.py -- anim</code>). It built the scene, rendered 120 frames with EEVEE, and used its built-in FFmpeg encoder to write <code>CookieShop.mp4</code> (1920x1080, 24 fps, 5 s, no audio).</li>
+    <li><b>ffprobe</b> (part of <b>FFmpeg</b>) read the file and showed one video stream and no audio stream. So there was no music to join back later.</li>
+    <li><b>fal</b> is a service that runs AI media models. Claude used the fal connector tools: <code>upload_file</code> returned a signed upload address, and <code>curl</code> sent the 3.1 MB video there (HTTP 200).</li>
+    <li>Claude then queued one job per style on the model <code>fal-ai/kling-video/o1/standard/video-to-video/edit</code> (Kling O1, Standard). Each job has the video address and a text prompt. The model keeps the motion of the input and changes the look. Claude ran the first job alone as a test, then queued the other four at the same time. <code>wait_for_jobs</code> checked them until they finished. Each job took about 6 to 9 minutes.</li>
+    <li><code>curl</code> downloaded the five results. <b>FFmpeg</b> built a contact sheet of one frame from each clip. Claude looked at that image to check the sign text, the sky and the style.</li>
+    <li>For this page, FFmpeg copied each clip without re-encoding (the Kling "AI-generated" label inside each file is kept) and cut one poster frame from each. <b>git</b> and the <b>GitHub CLI</b> pushed the files to this repository. <b>GitHub Pages</b> serves this page from the <code>docs/</code> folder.</li>
+  </ol>
+
+  <h2>Cost</h2>
+  <table>
+    <tr><th>Item</th><th>Amount</th></tr>
+    <tr><td>Model rate</td><td>$0.126 per second of video (Kling O1 Standard, as listed by fal on 2026-11-21 for this account)</td></tr>
+    <tr><td>One 5 s clip</td><td>about $0.63</td></tr>
+    <tr><td>Five clips (5 styles)</td><td>about $3.15</td></tr>
+    <tr><td>Blender render, FFmpeg, git, GitHub Pages</td><td>$0 extra (local tools and a free service)</td></tr>
+  </table>
+  <p class="note">The total is rate times seconds. It is an estimate. The fal invoice was not read.</p>
+
+  <h2>Limits and problems</h2>
+  <ul>
+    <li>The model accepts clips of 3 to 10 seconds. A long video must be cut into pieces, and each piece is styled on its own, so the look can change at a join. This is why only the 5-second render was used here.</li>
+    <li>Sign text can change. It did in the Pixar clip. Four of the five clips read "Kevin Cookie Company" correctly in the frame that was checked.</li>
+    <li>The prompt asked for a dark night sky in four clips. The Ghibli clip still shows a bright sky.</li>
+    <li>Only one frame of each clip was checked (three frames of the Pixar clip). The full clips were not reviewed for flicker or drifting shapes.</li>
+    <li>The clips have no sound, because the Blender render has no sound and the model does not keep audio by default.</li>
+  </ul>
+
+  <p class="meta note">Clips: 1280x720, 24 fps, H.264, 121 frames (5.04 s), 5.2 to 8.3 MB each. <a href="https://github.com/az9713/Claude-blender-demo">Back to the repository</a> · <a href="index.html">Original video page</a></p>
+</main>
+</body>
+</html>
