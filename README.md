@@ -33,7 +33,15 @@ The 5-second night render, restyled five times by an AI video model on [fal](htt
 </tr>
 </table>
 
-Each picture is one frame from its video. The five restyled clips are AI-generated and have no sound. For the explanation of each style, the prompts, how Claude, Blender, FFmpeg and fal work together (an interactive, animated diagram), and the cost (about $3.15 for all five clips), read: https://az9713.github.io/Claude-blender-demo/styles.html
+Each picture is one frame from its video. The five restyled clips are AI-generated and have no sound.
+
+**Live page:** https://az9713.github.io/Claude-blender-demo/styles.html. It explains each style, shows the prompts, and gives the cost (about $3.15 for all five clips).
+
+### How Claude, Blender, FFmpeg and fal work together
+
+[![Animated diagram: Claude Code runs Blender, FFmpeg, curl and git through a shell, and calls fal through an MCP server. Click to open the live, interactive version.](docs/styles/tools-diagram.gif)](https://az9713.github.io/Claude-blender-demo/styles.html#tools)
+
+**Click the animation to open the live, interactive diagram.** GitHub cannot run a web page inside a README, so the animation above is a recording of it. On the live page you can press Play, jump to any of the 10 steps, click any box to see what it does, and filter the lines by connection type. Only the fal part uses MCP. Blender, FFmpeg, curl and git run as shell commands.
 
 ## How Claude and Blender made this
 
